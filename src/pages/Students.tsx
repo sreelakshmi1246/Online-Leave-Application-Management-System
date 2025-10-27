@@ -96,5 +96,5 @@ const Students = () => {
     </div>
   );
 };
-
+//student
 export default Students;
