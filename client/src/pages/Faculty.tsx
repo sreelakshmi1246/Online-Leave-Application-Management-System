@@ -88,5 +88,5 @@ const FacultyPage = () => {
     </div>
   );
 };
-//faculty
+
 export default FacultyPage;
