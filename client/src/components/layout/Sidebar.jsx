@@ -9,11 +9,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 const navigation = [
   { name: 'Dashboard', to: '/', icon: LayoutDashboard },
   { name: 'Students', to: '/students', icon: GraduationCap },
@@ -22,7 +17,7 @@ const navigation = [
   { name: 'CSV Import', to: '/import', icon: Upload },
 ];
 
-export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Mobile overlay */}

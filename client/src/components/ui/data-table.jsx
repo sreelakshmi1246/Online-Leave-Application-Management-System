@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,33 +6,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface Column<T> {
-  key: string;
-  label: string;
-  render?: (item: T) => React.ReactNode;
-}
-
-interface DataTableProps<T> {
-  data: T[];
-  columns: Column<T>[];
-  onEdit?: (item: T) => void;
-  onDelete?: (item: T) => void;
-  searchPlaceholder?: string;
-}
-
-export function DataTable<T extends { id: string }>({
+export function DataTable({
   data,
   columns,
   onEdit,
   onDelete,
-  searchPlaceholder = 'Search...',
-}: DataTableProps<T>) {
-  const [searchTerm, setSearchTerm] = useState('');
+  searchPlaceholder = "Search...",
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -48,7 +34,7 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-4">
-      {/* Search */}
+      {/* Search bar */}
       <div className="relative w-full md:w-96">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
@@ -92,28 +78,18 @@ export function DataTable<T extends { id: string }>({
                 <TableRow key={item.id} className="hover:bg-muted/50 transition-colors">
                   {columns.map((column) => (
                     <TableCell key={column.key}>
-                      {column.render
-                        ? column.render(item)
-                        : String((item as any)[column.key] || '-')}
+                      {column.render ? column.render(item) : String(item[column.key] || "-")}
                     </TableCell>
                   ))}
                   {(onEdit || onDelete) && (
                     <TableCell className="text-right space-x-2">
                       {onEdit && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onEdit(item)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
                           Edit
                         </Button>
                       )}
                       {onDelete && (
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => onDelete(item)}
-                        >
+                        <Button variant="destructive" size="sm" onClick={() => onDelete(item)}>
                           Delete
                         </Button>
                       )}
@@ -130,8 +106,9 @@ export function DataTable<T extends { id: string }>({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredData.length)}{' '}
-            of {filteredData.length} entries
+            Showing {startIndex + 1} to{" "}
+            {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
+            {filteredData.length} entries
           </p>
           <div className="flex items-center gap-2">
             <Button

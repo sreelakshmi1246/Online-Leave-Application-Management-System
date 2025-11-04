@@ -1,26 +1,30 @@
-import { useState } from 'react';
-import { DataTable } from '@/components/ui/data-table';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import { mockFaculty } from '@/data/mockData';
-import { Faculty } from '@/types';
-import { FacultyDialog } from '@/components/faculty/FacultyDialog';
-import { DeleteDialog } from '@/components/shared/DeleteDialog';
-import { toast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { DataTable } from "@/components/ui/data-table";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { mockFaculty } from "@/data/mockData";
+import { FacultyDialog } from "@/components/faculty/FacultyDialog";
+import { DeleteDialog } from "@/components/shared/DeleteDialog";
+import { toast } from "@/hooks/use-toast";
 
 const FacultyPage = () => {
   const [faculty, setFaculty] = useState(mockFaculty);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingFaculty, setEditingFaculty] = useState<Faculty | undefined>();
-  const [deleteFaculty, setDeleteFaculty] = useState<Faculty | undefined>();
+  const [editingFaculty, setEditingFaculty] = useState(undefined);
+  const [deleteFaculty, setDeleteFaculty] = useState(undefined);
 
-  const handleSave = (facultyMember: Faculty) => {
+  const handleSave = (facultyMember) => {
     if (editingFaculty) {
-      setFaculty(faculty.map((f) => (f.id === facultyMember.id ? facultyMember : f)));
-      toast({ title: 'Faculty updated successfully' });
+      setFaculty((prev) =>
+        prev.map((f) => (f.id === facultyMember.id ? facultyMember : f))
+      );
+      toast({ title: "Faculty updated successfully" });
     } else {
-      setFaculty([...faculty, { ...facultyMember, id: Date.now().toString() }]);
-      toast({ title: 'Faculty added successfully' });
+      setFaculty((prev) => [
+        ...prev,
+        { ...facultyMember, id: Date.now().toString() },
+      ]);
+      toast({ title: "Faculty added successfully" });
     }
     setIsDialogOpen(false);
     setEditingFaculty(undefined);
@@ -28,22 +32,23 @@ const FacultyPage = () => {
 
   const handleDelete = () => {
     if (deleteFaculty) {
-      setFaculty(faculty.filter((f) => f.id !== deleteFaculty.id));
-      toast({ title: 'Faculty deleted successfully' });
+      setFaculty((prev) => prev.filter((f) => f.id !== deleteFaculty.id));
+      toast({ title: "Faculty deleted successfully" });
       setDeleteFaculty(undefined);
     }
   };
 
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'employeeId', label: 'Employee ID' },
-    { key: 'email', label: 'Email' },
-    { key: 'department', label: 'Department' },
-    { key: 'designation', label: 'Designation' },
+    { key: "name", label: "Name" },
+    { key: "employeeId", label: "Employee ID" },
+    { key: "email", label: "Email" },
+    { key: "department", label: "Department" },
+    { key: "designation", label: "Designation" },
   ];
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Faculty</h2>
@@ -57,6 +62,7 @@ const FacultyPage = () => {
         </Button>
       </div>
 
+      {/* Data Table */}
       <DataTable
         data={faculty}
         columns={columns}
@@ -68,6 +74,7 @@ const FacultyPage = () => {
         searchPlaceholder="Search faculty..."
       />
 
+      {/* Dialogs */}
       <FacultyDialog
         open={isDialogOpen}
         onOpenChange={(open) => {

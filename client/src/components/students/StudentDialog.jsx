@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Student } from '@/types';
 import { mockFaculty } from '@/data/mockData';
 
 const formSchema = z.object({
@@ -37,20 +36,8 @@ const formSchema = z.object({
   facultyAdvisorId: z.string().optional(),
 });
 
-interface StudentDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  student?: Student;
-  onSave: (student: Student) => void;
-}
-
-export const StudentDialog = ({
-  open,
-  onOpenChange,
-  student,
-  onSave,
-}: StudentDialogProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+export const StudentDialog = ({ open, onOpenChange, student, onSave }) => {
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -77,11 +64,11 @@ export const StudentDialog = ({
     }
   }, [student, form]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values) => {
     onSave({
       ...values,
       id: student?.id || '',
-    } as Student);
+    });
     form.reset();
   };
 
@@ -115,11 +102,7 @@ export const StudentDialog = ({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="student@example.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="student@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -206,11 +189,7 @@ export const StudentDialog = ({
               )}
             />
             <div className="flex gap-3 justify-end pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit">

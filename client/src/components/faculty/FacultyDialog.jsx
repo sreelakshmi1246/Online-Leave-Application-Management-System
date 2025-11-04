@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Faculty } from '@/types';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -28,20 +27,8 @@ const formSchema = z.object({
   designation: z.string().min(2, 'Designation is required'),
 });
 
-interface FacultyDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  faculty?: Faculty;
-  onSave: (faculty: Faculty) => void;
-}
-
-export const FacultyDialog = ({
-  open,
-  onOpenChange,
-  faculty,
-  onSave,
-}: FacultyDialogProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+export const FacultyDialog = ({ open, onOpenChange, faculty, onSave }) => {
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -66,11 +53,11 @@ export const FacultyDialog = ({
     }
   }, [faculty, form]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values) => {
     onSave({
       ...values,
       id: faculty?.id || '',
-    } as Faculty);
+    });
     form.reset();
   };
 

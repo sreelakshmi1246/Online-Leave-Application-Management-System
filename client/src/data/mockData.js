@@ -1,6 +1,4 @@
-import { Student, Faculty, Mapping } from '@/types';
-
-export const mockStudents: Student[] = [
+export const mockStudents = [
   {
     id: '1',
     name: 'Rahul Sharma',
@@ -46,7 +44,7 @@ export const mockStudents: Student[] = [
   },
 ];
 
-export const mockFaculty: Faculty[] = [
+export const mockFaculty = [
   {
     id: '1',
     name: 'Dr. Anil Verma',
@@ -81,7 +79,7 @@ export const mockFaculty: Faculty[] = [
   },
 ];
 
-export const mockMappings: Mapping[] = [
+export const mockMappings = [
   {
     id: '1',
     studentId: '1',

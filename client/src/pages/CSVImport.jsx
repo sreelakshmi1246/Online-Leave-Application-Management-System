@@ -3,15 +3,14 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, CheckCircle2 } from 'lucide-react';
 import { DataTable } from '@/components/ui/data-table';
-import { Student } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
 const CSVImport = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [previewData, setPreviewData] = useState<Student[]>([]);
+  const [file, setFile] = useState(null);
+  const [previewData, setPreviewData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.type === 'text/csv') {
       setFile(selectedFile);
@@ -25,16 +24,16 @@ const CSVImport = () => {
     }
   };
 
-  const parseCSV = (file: File) => {
+  const parseCSV = (file) => {
     setIsProcessing(true);
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
-      const text = e.target?.result as string;
+      const text = e.target?.result;
       const lines = text.split('\n').filter((line) => line.trim());
       const headers = lines[0].split(',').map((h) => h.trim());
-      
-      const data: Student[] = lines.slice(1).map((line, index) => {
+
+      const data = lines.slice(1).map((line, index) => {
         const values = line.split(',').map((v) => v.trim());
         return {
           id: `import-${index}`,
@@ -67,7 +66,11 @@ const CSVImport = () => {
     { key: 'email', label: 'Email' },
     { key: 'enrollmentNumber', label: 'Enrollment No.' },
     { key: 'department', label: 'Department' },
-    { key: 'year', label: 'Year', render: (s: Student) => `Year ${s.year}` },
+    { 
+      key: 'year', 
+      label: 'Year', 
+      render: (s) => `Year ${s.year}` 
+    },
   ];
 
   return (
@@ -120,7 +123,7 @@ const CSVImport = () => {
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-success" />
+              <CheckCircle2 className="w-5 h-5 text-green-500" />
             </div>
           )}
 

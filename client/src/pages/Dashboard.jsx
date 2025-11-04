@@ -1,7 +1,7 @@
-import { Users, GraduationCap, Link2, FileText } from 'lucide-react';
-import { StatCard } from '@/components/dashboard/StatCard';
-import { mockStudents, mockFaculty, mockMappings } from '@/data/mockData';
-import { Card } from '@/components/ui/card';
+import { Users, GraduationCap, Link2, FileText } from "lucide-react";
+import { StatCard } from "@/components/dashboard/StatCard";
+import { mockStudents, mockFaculty, mockMappings } from "@/data/mockData";
+import { Card } from "@/components/ui/card";
 
 const Dashboard = () => {
   const mappedStudents = mockStudents.filter((s) => s.facultyAdvisorId).length;
@@ -9,6 +9,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h2 className="text-3xl font-bold text-foreground">Dashboard Overview</h2>
         <p className="text-muted-foreground mt-2">
@@ -46,6 +47,7 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Recent Students */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Recent Students
@@ -58,7 +60,9 @@ const Dashboard = () => {
               >
                 <div>
                   <p className="font-medium text-foreground">{student.name}</p>
-                  <p className="text-sm text-muted-foreground">{student.department}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {student.department}
+                  </p>
                 </div>
                 <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
                   Year {student.year}
@@ -68,6 +72,7 @@ const Dashboard = () => {
           </div>
         </Card>
 
+        {/* Faculty Members */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Faculty Members
@@ -80,7 +85,9 @@ const Dashboard = () => {
               >
                 <div>
                   <p className="font-medium text-foreground">{faculty.name}</p>
-                  <p className="text-sm text-muted-foreground">{faculty.department}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {faculty.department}
+                  </p>
                 </div>
                 <span className="text-xs font-medium px-2 py-1 rounded-full bg-secondary/10 text-secondary">
                   {faculty.designation}

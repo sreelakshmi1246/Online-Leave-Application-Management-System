@@ -3,7 +3,6 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { mockStudents, mockFaculty } from '@/data/mockData';
-import { Student } from '@/types';
 import { StudentDialog } from '@/components/students/StudentDialog';
 import { DeleteDialog } from '@/components/shared/DeleteDialog';
 import { toast } from '@/hooks/use-toast';
@@ -11,10 +10,10 @@ import { toast } from '@/hooks/use-toast';
 const Students = () => {
   const [students, setStudents] = useState(mockStudents);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingStudent, setEditingStudent] = useState<Student | undefined>();
-  const [deleteStudent, setDeleteStudent] = useState<Student | undefined>();
+  const [editingStudent, setEditingStudent] = useState();
+  const [deleteStudent, setDeleteStudent] = useState();
 
-  const handleSave = (student: Student) => {
+  const handleSave = (student) => {
     if (editingStudent) {
       setStudents(students.map((s) => (s.id === student.id ? student : s)));
       toast({ title: 'Student updated successfully' });
@@ -39,11 +38,11 @@ const Students = () => {
     { key: 'enrollmentNumber', label: 'Enrollment No.' },
     { key: 'email', label: 'Email' },
     { key: 'department', label: 'Department' },
-    { key: 'year', label: 'Year', render: (s: Student) => `Year ${s.year}` },
+    { key: 'year', label: 'Year', render: (s) => `Year ${s.year}` },
     {
       key: 'facultyAdvisor',
       label: 'Faculty Advisor',
-      render: (s: Student) => {
+      render: (s) => {
         const faculty = mockFaculty.find((f) => f.id === s.facultyAdvisorId);
         return faculty ? faculty.name : '-';
       },

@@ -10,11 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
 
-interface NavbarProps {
-  onMenuClick: () => void;
-}
-
-export const Navbar = ({ onMenuClick }: NavbarProps) => {
+export const Navbar = ({ onMenuClick }) => {
   const handleLogout = () => {
     toast({
       title: 'Logged out',

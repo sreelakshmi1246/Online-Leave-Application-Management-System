@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { mockStudents, mockFaculty, mockMappings } from '@/data/mockData';
-import { Mapping } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Link2, Trash2 } from 'lucide-react';
 
@@ -32,7 +31,7 @@ const Mappings = () => {
       return;
     }
 
-    const newMapping: Mapping = {
+    const newMapping = {
       id: Date.now().toString(),
       studentId: selectedStudent,
       facultyId: selectedFaculty,
@@ -45,7 +44,7 @@ const Mappings = () => {
     toast({ title: 'Mapping created successfully' });
   };
 
-  const handleDeleteMapping = (mappingId: string) => {
+  const handleDeleteMapping = (mappingId) => {
     setMappings(mappings.filter((m) => m.id !== mappingId));
     toast({ title: 'Mapping deleted successfully' });
   };
@@ -113,7 +112,7 @@ const Mappings = () => {
                 key={mapping.id}
                 className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
               >
-                <div className="flex items-center gap-4 flex-1">
+                <div className="flex items-center justify-between flex-1 gap-4">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Link2 className="w-5 h-5 text-primary" />
                   </div>
