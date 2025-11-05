@@ -1,12 +1,18 @@
+// src/pages/FacultyDashboard.jsx
 import React from "react";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "../components/studentmodule/Navbar";
+import FacultyPage from "./FacultyPage";
+
 
 function FacultyDashboard() {
   return (
     <div>
       <Navbar role="faculty" />
-      <h2>Faculty Dashboard</h2>
-      <p>Pending approvals (mock data)</p>
+      <Routes>
+        <Route index element={<FacultyPage />} />
+        {/* later you can add more nested routes like leave details, reports etc. */}
+      </Routes>
     </div>
   );
 }
