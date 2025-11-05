@@ -1,14 +1,15 @@
+// src/App.jsx
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Layout } from "./components/layout/Layout";
-import Dashboard from "./pages/Dashboard";
-import Students from "./pages/Students";
-import Faculty from "./pages/Faculty";
-import Mappings from "./pages/Mappings";
-import CSVImport from "./pages/CSVImport";
+
+import LoginPage from "./pages/LoginPage";
+import AdminDashboard from "./pages/AdminDashboard";
+import FacultyDashboard from "./pages/FacultyDashboard";
+import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,13 +22,15 @@ function App() {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/students" element={<Students />} />
-              <Route path="/faculty" element={<Faculty />} />
-              <Route path="/mappings" element={<Mappings />} />
-              <Route path="/import" element={<CSVImport />} />
-            </Route>
+            {/* Default Login Page */}
+            <Route path="/" element={<LoginPage />} />
+
+            {/* Role-Based Dashboards */}
+            <Route path="/admin/*" element={<AdminDashboard />} />
+            <Route path="/faculty/*" element={<FacultyDashboard />} />
+            <Route path="/student/*" element={<StudentDashboard />} />
+
+            {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

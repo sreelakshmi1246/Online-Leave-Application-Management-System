@@ -10,12 +10,13 @@ import {
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', to: '/', icon: LayoutDashboard },
-  { name: 'Students', to: '/students', icon: GraduationCap },
-  { name: 'Faculty', to: '/faculty', icon: Users },
-  { name: 'Mappings', to: '/mappings', icon: Link2 },
-  { name: 'CSV Import', to: '/import', icon: Upload },
+  { name: 'Dashboard', to: '', icon: LayoutDashboard },      // index route = /admin
+  { name: 'Students', to: 'students', icon: GraduationCap }, // /admin/students
+  { name: 'Faculty', to: 'faculty', icon: Users },           // /admin/faculty
+  { name: 'Mappings', to: 'mappings', icon: Link2 },         // /admin/mappings
+  { name: 'CSV Import', to: 'import', icon: Upload },        // /admin/import
 ];
+
 
 export const Sidebar = ({ isOpen, onClose }) => {
   return (
