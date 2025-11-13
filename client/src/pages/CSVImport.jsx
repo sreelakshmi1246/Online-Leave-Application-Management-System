@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Upload, FileText, CheckCircle2 } from 'lucide-react';
 import { DataTable } from '@/components/ui/data-table';
 import { toast } from '@/hooks/use-toast';
+import { importCSV } from '@/services/user';
 
 const CSVImport = () => {
   const [file, setFile] = useState(null);
   const [previewData, setPreviewData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Handle file selection
   const handleFileChange = (event) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.type === 'text/csv') {
@@ -24,6 +26,7 @@ const CSVImport = () => {
     }
   };
 
+  // Parse CSV for preview
   const parseCSV = (file) => {
     setIsProcessing(true);
     const reader = new FileReader();
@@ -31,7 +34,15 @@ const CSVImport = () => {
     reader.onload = (e) => {
       const text = e.target?.result;
       const lines = text.split('\n').filter((line) => line.trim());
-      const headers = lines[0].split(',').map((h) => h.trim());
+      if (lines.length < 2) {
+        toast({
+          title: 'Empty CSV',
+          description: 'No data found in file.',
+          variant: 'destructive',
+        });
+        setIsProcessing(false);
+        return;
+      }
 
       const data = lines.slice(1).map((line, index) => {
         const values = line.split(',').map((v) => v.trim());
@@ -52,13 +63,37 @@ const CSVImport = () => {
     reader.readAsText(file);
   };
 
-  const handleImport = () => {
-    toast({
-      title: 'Import successful',
-      description: `Successfully imported ${previewData.length} students`,
-    });
-    setFile(null);
-    setPreviewData([]);
+  // Handle Import button click
+  const handleImport = async () => {
+    if (!file) {
+      toast({
+        title: 'No file selected',
+        description: 'Please choose a CSV file to upload.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const res = await importCSV(file);
+
+      toast({
+        title: 'Import successful',
+        description: res.data?.message || `Successfully imported ${previewData.length} students.`,
+      });
+
+      setFile(null);
+      setPreviewData([]);
+    } catch (err) {
+      toast({
+        title: 'Import failed',
+        description: err.response?.data?.message || 'An error occurred while importing.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const columns = [
@@ -66,10 +101,10 @@ const CSVImport = () => {
     { key: 'email', label: 'Email' },
     { key: 'enrollmentNumber', label: 'Enrollment No.' },
     { key: 'department', label: 'Department' },
-    { 
-      key: 'year', 
-      label: 'Year', 
-      render: (s) => `Year ${s.year}` 
+    {
+      key: 'year',
+      label: 'Year',
+      render: (s) => `Year ${s.year}`,
     },
   ];
 
@@ -151,9 +186,13 @@ const CSVImport = () => {
                 Review the data before importing
               </p>
             </div>
-            <Button onClick={handleImport} className="gap-2">
+            <Button
+              onClick={handleImport}
+              disabled={isProcessing}
+              className="gap-2"
+            >
               <Upload className="w-4 h-4" />
-              Import Students
+              {isProcessing ? 'Importing...' : 'Import Students'}
             </Button>
           </div>
           <DataTable data={previewData} columns={columns} />
