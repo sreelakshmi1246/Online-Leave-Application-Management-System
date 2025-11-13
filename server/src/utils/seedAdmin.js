@@ -6,19 +6,19 @@ dotenv.config();
 
 const seed = async () => {
   await connectDB();
-  const exists = await User.findOne({ email: 'admin@college.edu' });
+  const exists = await User.findOne({ email: 'admin@nitc.ac.in' });
   if (exists) {
     console.log('Admin exists:', exists.email);
     process.exit(0);
   }
   const admin = new User({
     name: 'Admin',
-    email: 'admin@college.edu',
+    email: 'admin@nitc.ac.in',
     password: 'Admin@123', // change after first login
     role: 'admin'
   });
   await admin.save();
-  console.log('Admin created: admin@college.edu / Admin@123');
+  console.log('Admin created: admin@nitc.ac.in / Admin@123');
   process.exit(0);
 };
 
