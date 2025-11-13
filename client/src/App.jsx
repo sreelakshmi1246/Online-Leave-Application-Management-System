@@ -1,5 +1,5 @@
 // src/App.jsx
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,9 +12,14 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
+import ProtectedRoute from "./components/shared/ProtectedRoute";
+import { AuthContext } from "./context/AuthContext";
+
 const queryClient = new QueryClient();
 
 function App() {
+  const { user } = useContext(AuthContext);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -22,13 +27,36 @@ function App() {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Default Login Page */}
+            {/* Public route */}
             <Route path="/" element={<LoginPage />} />
 
-            {/* Role-Based Dashboards */}
-            <Route path="/admin/*" element={<AdminDashboard />} />
-            <Route path="/faculty/*" element={<FacultyDashboard />} />
-            <Route path="/student/*" element={<StudentDashboard />} />
+            {/* 🧱 Protected Routes — only logged-in users can access */}
+            <Route
+              path="/admin/*"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/faculty/*"
+              element={
+                <ProtectedRoute allowedRoles={["faculty"]}>
+                  <FacultyDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/student/*"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentDashboard />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

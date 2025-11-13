@@ -1,7 +1,9 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Loginpage.css";
+import { AuthContext } from "../context/AuthContext";
+import { loginRequest } from "../services/auth";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -10,8 +12,9 @@ function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -25,15 +28,35 @@ function LoginPage() {
       return;
     }
 
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
+      // 🔹 Call backend API (POST /api/auth/login)
+      const res = await loginRequest(email, password);
 
-    setTimeout(() => {
+      const { token, user } = res.data;
+
+      // (Optional sanity check: make sure selected role matches backend)
+      if (user.role !== role) {
+        setError(
+          `Selected role (${role}) does not match your assigned role (${user.role}).`
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      // 🔹 Store in context (and localStorage automatically)
+      login(token, user);
+
+      // 🔹 Redirect by role
+      if (user.role === "admin") navigate("/admin");
+      else if (user.role === "faculty") navigate("/faculty");
+      else navigate("/student");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.response?.data?.message || "Login failed. Try again.");
+    } finally {
       setIsLoading(false);
-      if (role === "student") navigate("/student");
-      else if (role === "faculty") navigate("/faculty");
-      else if (role === "admin") navigate("/admin");
-      else setError("Invalid role selection.");
-    }, 1500);
+    }
   };
 
   return (
@@ -85,11 +108,7 @@ function LoginPage() {
 
           {error && <p className="error-message">{error}</p>}
 
-          <button
-            type="submit"
-            className="login-button"
-            disabled={isLoading}
-          >
+          <button type="submit" className="login-button" disabled={isLoading}>
             {isLoading ? "Logging in..." : "Log In"}
           </button>
         </form>
