@@ -1,14 +1,46 @@
+import { useEffect, useState } from "react";
 import { Users, GraduationCap, Link2, FileText } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { mockStudents, mockFaculty, mockMappings } from "@/data/mockData";
 import { Card } from "@/components/ui/card";
 
+import { listUsers } from "@/services/user";
+import { listMappings } from "@/services/mapping";
+
 const Dashboard = () => {
-  const mappedStudents = mockStudents.filter((s) => s.facultyAdvisorId).length;
-  const unmappedStudents = mockStudents.length - mappedStudents;
+  const [students, setStudents] = useState([]);
+  const [faculty, setFaculty] = useState([]);
+  const [mappings, setMappings] = useState([]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      const [userRes, mapRes] = await Promise.all([
+        listUsers(),
+        listMappings(),
+      ]);
+
+      const allUsers = userRes.data || [];
+
+      setStudents(allUsers.filter((u) => u.role === "student"));
+      setFaculty(allUsers.filter((u) => u.role === "faculty"));
+      setMappings(mapRes.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Calculate stats
+  const activeMappings = mappings.length;
+
+  const mappedStudentIds = mappings.map((m) => m.student?._id);
+  const unmappedStudents = students.filter((s) => !mappedStudentIds.includes(s._id));
 
   return (
     <div className="space-y-6">
+
       {/* Header */}
       <div>
         <h2 className="text-3xl font-bold text-foreground">Dashboard Overview</h2>
@@ -21,25 +53,25 @@ const Dashboard = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Students"
-          value={mockStudents.length}
+          value={students.length}
           icon={GraduationCap}
           color="blue"
         />
         <StatCard
           title="Total Faculty"
-          value={mockFaculty.length}
+          value={faculty.length}
           icon={Users}
           color="purple"
         />
         <StatCard
           title="Active Mappings"
-          value={mockMappings.length}
+          value={activeMappings}
           icon={Link2}
           color="green"
         />
         <StatCard
           title="Pending Mappings"
-          value={unmappedStudents}
+          value={unmappedStudents.length}
           icon={FileText}
           color="orange"
         />
@@ -47,15 +79,17 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <div className="grid gap-6 md:grid-cols-2">
+
         {/* Recent Students */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Recent Students
           </h3>
+
           <div className="space-y-3">
-            {mockStudents.slice(0, 5).map((student) => (
+            {students.slice(-5).reverse().map((student) => (
               <div
-                key={student.id}
+                key={student._id}
                 className="flex items-center justify-between py-2 border-b border-border last:border-0"
               >
                 <div>
@@ -72,30 +106,32 @@ const Dashboard = () => {
           </div>
         </Card>
 
-        {/* Faculty Members */}
+        {/* Recent Faculty */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Faculty Members
           </h3>
+
           <div className="space-y-3">
-            {mockFaculty.map((faculty) => (
+            {faculty.slice(-5).reverse().map((f) => (
               <div
-                key={faculty.id}
+                key={f._id}
                 className="flex items-center justify-between py-2 border-b border-border last:border-0"
               >
                 <div>
-                  <p className="font-medium text-foreground">{faculty.name}</p>
+                  <p className="font-medium text-foreground">{f.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {faculty.department}
+                    {f.department}
                   </p>
                 </div>
                 <span className="text-xs font-medium px-2 py-1 rounded-full bg-secondary/10 text-secondary">
-                  {faculty.designation}
+                  {f.designation}
                 </span>
               </div>
             ))}
           </div>
         </Card>
+
       </div>
     </div>
   );

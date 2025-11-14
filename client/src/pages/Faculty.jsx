@@ -1,40 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { mockFaculty } from "@/data/mockData";
-import { FacultyDialog } from "@/components/faculty/FacultyDialog";
-import { DeleteDialog } from "@/components/shared/DeleteDialog";
 import { toast } from "@/hooks/use-toast";
 
-const FacultyPage = () => {
-  const [faculty, setFaculty] = useState(mockFaculty);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingFaculty, setEditingFaculty] = useState(undefined);
-  const [deleteFaculty, setDeleteFaculty] = useState(undefined);
+import { FacultyDialog } from "@/components/faculty/FacultyDialog";
+import { DeleteDialog } from "@/components/shared/DeleteDialog";
 
-  const handleSave = (facultyMember) => {
-    if (editingFaculty) {
-      setFaculty((prev) =>
-        prev.map((f) => (f.id === facultyMember.id ? facultyMember : f))
-      );
-      toast({ title: "Faculty updated successfully" });
-    } else {
-      setFaculty((prev) => [
-        ...prev,
-        { ...facultyMember, id: Date.now().toString() },
-      ]);
-      toast({ title: "Faculty added successfully" });
+import { listUsers, createUser, deleteUser } from "@/services/user";
+
+const FacultyPage = () => {
+  const [faculty, setFaculty] = useState([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingFaculty, setEditingFaculty] = useState(null);
+  const [deleteFaculty, setDeleteFaculty] = useState(null);
+
+  // load all faculty from backend
+  useEffect(() => {
+    fetchFaculty();
+  }, []);
+
+  const fetchFaculty = async () => {
+    try {
+      const res = await listUsers();
+      const all = res.data || [];
+      setFaculty(all.filter((u) => u.role === "faculty"));
+    } catch (err) {
+      toast({ title: "Error loading faculty", variant: "destructive" });
     }
-    setIsDialogOpen(false);
-    setEditingFaculty(undefined);
   };
 
-  const handleDelete = () => {
-    if (deleteFaculty) {
-      setFaculty((prev) => prev.filter((f) => f.id !== deleteFaculty.id));
-      toast({ title: "Faculty deleted successfully" });
-      setDeleteFaculty(undefined);
+  const handleSave = async (data) => {
+    try {
+      await createUser({ ...data, role: "faculty" });
+
+      toast({
+        title: editingFaculty ? "Faculty updated" : "Faculty added"
+      });
+
+      setIsDialogOpen(false);
+      setEditingFaculty(null);
+
+      fetchFaculty();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err.response?.data?.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(deleteFaculty._id);
+      toast({ title: "Faculty deleted" });
+      setDeleteFaculty(null);
+      fetchFaculty();
+    } catch {
+      toast({ title: "Delete failed", variant: "destructive" });
     }
   };
 
@@ -48,38 +72,35 @@ const FacultyPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Faculty</h2>
-          <p className="text-muted-foreground mt-2">
-            Manage faculty members and advisors
-          </p>
+          <p className="text-muted-foreground mt-2">Manage faculty members</p>
         </div>
+
         <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
           <Plus className="w-4 h-4" />
           Add Faculty
         </Button>
       </div>
 
-      {/* Data Table */}
       <DataTable
         data={faculty}
         columns={columns}
-        onEdit={(facultyMember) => {
-          setEditingFaculty(facultyMember);
+        onEdit={(f) => {
+          setEditingFaculty(f);
           setIsDialogOpen(true);
         }}
-        onDelete={(facultyMember) => setDeleteFaculty(facultyMember)}
+        onDelete={(f) => setDeleteFaculty(f)}
         searchPlaceholder="Search faculty..."
       />
 
-      {/* Dialogs */}
       <FacultyDialog
         open={isDialogOpen}
         onOpenChange={(open) => {
           setIsDialogOpen(open);
-          if (!open) setEditingFaculty(undefined);
+          if (!open) setEditingFaculty(null);
         }}
         faculty={editingFaculty}
         onSave={handleSave}
@@ -87,10 +108,10 @@ const FacultyPage = () => {
 
       <DeleteDialog
         open={!!deleteFaculty}
-        onOpenChange={(open) => !open && setDeleteFaculty(undefined)}
+        onOpenChange={(open) => !open && setDeleteFaculty(null)}
         onConfirm={handleDelete}
         title="Delete Faculty"
-        description={`Are you sure you want to delete ${deleteFaculty?.name}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${deleteFaculty?.name}?`}
       />
     </div>
   );
