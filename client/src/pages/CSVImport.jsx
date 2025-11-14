@@ -11,7 +11,6 @@ const CSVImport = () => {
   const [previewData, setPreviewData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Handle file selection
   const handleFileChange = (event) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.type === 'text/csv') {
@@ -26,7 +25,6 @@ const CSVImport = () => {
     }
   };
 
-  // Parse CSV for preview
   const parseCSV = (file) => {
     setIsProcessing(true);
     const reader = new FileReader();
@@ -34,6 +32,7 @@ const CSVImport = () => {
     reader.onload = (e) => {
       const text = e.target?.result;
       const lines = text.split('\n').filter((line) => line.trim());
+
       if (lines.length < 2) {
         toast({
           title: 'Empty CSV',
@@ -46,13 +45,16 @@ const CSVImport = () => {
 
       const data = lines.slice(1).map((line, index) => {
         const values = line.split(',').map((v) => v.trim());
+
         return {
           id: `import-${index}`,
           name: values[0] || '',
           email: values[1] || '',
-          enrollmentNumber: values[2] || '',
+          rollNo: values[2] || '',
           department: values[3] || '',
-          year: parseInt(values[4]) || 1,
+          program: values[4] || '',
+          year: parseInt(values[5]) || 1,
+          password: values[6] || 'Student@123',
         };
       });
 
@@ -63,7 +65,6 @@ const CSVImport = () => {
     reader.readAsText(file);
   };
 
-  // Handle Import button click
   const handleImport = async () => {
     if (!file) {
       toast({
@@ -80,7 +81,7 @@ const CSVImport = () => {
 
       toast({
         title: 'Import successful',
-        description: res.data?.message || `Successfully imported ${previewData.length} students.`,
+        description: `Inserted: ${res.data.inserted}, Skipped: ${res.data.skipped}`,
       });
 
       setFile(null);
@@ -99,13 +100,10 @@ const CSVImport = () => {
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
-    { key: 'enrollmentNumber', label: 'Enrollment No.' },
+    { key: 'rollNo', label: 'Roll No' },
     { key: 'department', label: 'Department' },
-    {
-      key: 'year',
-      label: 'Year',
-      render: (s) => `Year ${s.year}`,
-    },
+    { key: 'program', label: 'Program' },
+    { key: 'year', label: 'Year', render: (s) => `Year ${s.year}` },
   ];
 
   return (
@@ -117,13 +115,11 @@ const CSVImport = () => {
         </p>
       </div>
 
-      {/* Upload Section */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">
-          Upload CSV File
-        </h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Upload CSV File</h3>
+
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+          <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
             <input
               type="file"
               accept=".csv"
@@ -139,62 +135,28 @@ const CSVImport = () => {
                 <Upload className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="font-medium text-foreground">
-                  Click to upload or drag and drop
-                </p>
+                <p className="font-medium text-foreground">Click to upload</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  CSV files only (MAX. 5MB)
+                  CSV Format: name, email, rollNo, department, program, year, password(optional)
                 </p>
               </div>
             </label>
           </div>
-
-          {file && (
-            <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
-              <FileText className="w-5 h-5 text-primary" />
-              <div className="flex-1">
-                <p className="font-medium text-foreground">{file.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {(file.size / 1024).toFixed(2)} KB
-                </p>
-              </div>
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-            </div>
-          )}
-
-          <div className="bg-muted p-4 rounded-lg">
-            <h4 className="font-medium text-foreground mb-2">CSV Format</h4>
-            <p className="text-sm text-muted-foreground mb-2">
-              Your CSV file should have the following columns:
-            </p>
-            <code className="text-xs bg-background p-2 rounded block text-foreground">
-              Name, Email, Enrollment Number, Department, Year
-            </code>
-          </div>
         </div>
       </Card>
 
-      {/* Preview Section */}
       {previewData.length > 0 && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                Preview ({previewData.length} records)
-              </h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Review the data before importing
-              </p>
-            </div>
-            <Button
-              onClick={handleImport}
-              disabled={isProcessing}
-              className="gap-2"
-            >
+            <h3 className="text-lg font-semibold text-foreground">
+              Preview ({previewData.length} records)
+            </h3>
+            <Button onClick={handleImport} disabled={isProcessing} className="gap-2">
               <Upload className="w-4 h-4" />
-              {isProcessing ? 'Importing...' : 'Import Students'}
+              {isProcessing ? 'Importing…' : 'Import Students'}
             </Button>
           </div>
+
           <DataTable data={previewData} columns={columns} />
         </Card>
       )}

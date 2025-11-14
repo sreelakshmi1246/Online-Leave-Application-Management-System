@@ -3,16 +3,29 @@ import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  rollNo: { type: String }, // students only
-  employeeId: { type: String }, // faculty only
+  
+  // Student fields
+  rollNo: { type: String },
+  program: { type: String },
+  year: { type: Number },
+  
+  // Faculty fields
+  employeeId: { type: String },
+  designation: { type: String },
+
+  // Common fields
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   department: { type: String },
-  program: { type: String }, // BTech, MTech etc
   role: { type: String, enum: ['admin', 'faculty', 'student'], required: true },
-  leaveBalance: { type: Number, default: 20 }, // initial
+
+   // NEW FIELDS for semester leave tracking
+  casualLeaveUsed: { type: Number, default: 0 },  // out of 8
+  medicalLeaveUsed: { type: Number, default: 0 }, // out of 7
+  //leaveBalance: { type: Number, default: 20 },
   createdAt: { type: Date, default: Date.now }
 });
+
 
 // hash password before save
 userSchema.pre('save', async function (next) {

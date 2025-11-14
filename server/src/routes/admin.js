@@ -10,11 +10,11 @@ const router = express.Router();
 // add user (admin only)
 router.post('/users', auth, roleCheck('admin'), async (req, res) => {
   try {
-    const { name, email, password, role, department, program, rollNo, employeeId } = req.body;
+    const { name, email, password, role, department, program, rollNo, employeeId, year, designation } = req.body;
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email already in use' });
 
-    const user = new User({ name, email, password, role, department, program, rollNo, employeeId });
+    const user = new User({ name, email, password, role, department, program, rollNo, employeeId, year, designation });
     await user.save();
     res.status(201).json({ message: 'User created', userId: user._id });
   } catch (err) {

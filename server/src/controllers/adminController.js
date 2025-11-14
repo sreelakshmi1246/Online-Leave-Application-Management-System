@@ -22,6 +22,7 @@ export const bulkImportStudents = async (req, res) => {
         const department = record.department?.trim();
         const program = record.program?.trim();
         const password = (record.password && record.password.trim()) || 'Student@123';
+        const year = record.year ? parseInt(record.year.trim()) : undefined;
 
         if (!name || !email || !rollNo) {
           skipped.push({ record, reason: 'missing required fields' });
@@ -35,7 +36,7 @@ export const bulkImportStudents = async (req, res) => {
         }
 
         const user = new User({
-          name, email, password, role: 'student', rollNo, department, program
+          name, email, password, role: 'student', rollNo, department, program, year
         });
         await user.save();
         inserted.push(user);

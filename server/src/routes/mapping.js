@@ -42,8 +42,8 @@ router.post('/assign', auth, roleCheck('admin'), async (req, res) => {
  * Admin: View all mappings
  */
 router.get('/', auth, roleCheck('admin'), async (req, res) => {
-  const mappings = await Mapping.find().populate('student', 'name email rollNo department')
-                                       .populate('faculty', 'name email employeeId department');
+  const mappings = await Mapping.find().populate('student', 'name email rollNo department program year')
+                                       .populate('faculty', 'name email employeeId department designation');
   res.json(mappings);
 });
 

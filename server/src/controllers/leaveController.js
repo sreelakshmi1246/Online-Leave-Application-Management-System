@@ -30,9 +30,18 @@ export const applyLeave = async (req, res) => {
     const facultyId = map ? map.faculty : null;
 
     // check leave balance (change policy here if you want to deduct only on approval)
-    if ((user.leaveBalance || 0) < days) {
-      return res.status(400).json({ message: 'Insufficient leave balance' });
+    if (type === 'casual') {
+      const used = user.casualLeaveUsed || 0;
+      if (used + days > 8)
+        return res.status(400).json({ message: 'Exceeds casual leave limit (8 days)' });
     }
+    if (type === 'medical') {
+      const used = user.medicalLeaveUsed || 0;
+      if (used + days > 7)
+        return res.status(400).json({ message: 'Exceeds medical leave limit (7 days)' });
+    }
+
+
 
     const attachments = [];
     if (req.files && req.files.length) {
@@ -111,13 +120,19 @@ export const approveLeave = async (req, res) => {
 
     leave.status = 'approved';
     leave.remarks = req.body.remarks || '';
+    leave.actionBy = user._id;
     await leave.save();
     await sendNotification(leave.student, 'Leave Approved', `Your leave from ${leave.fromDate.toDateString()} to ${leave.toDate.toDateString()} was approved.`);
 
 
     // deduct leave balance
     const student = await User.findById(leave.student);
-    student.leaveBalance = Math.max(0, (student.leaveBalance || 0) - (leave.days || 0));
+    if (leave.type === 'casual') {
+      student.casualLeaveUsed = (student.casualLeaveUsed || 0) + leave.days;
+    }
+    if (leave.type === 'medical') {
+      student.medicalLeaveUsed = (student.medicalLeaveUsed || 0) + leave.days;
+    }
     await student.save();
 
     return res.json({ message: 'Leave approved', leave });
@@ -144,6 +159,7 @@ export const rejectLeave = async (req, res) => {
 
     leave.status = 'rejected';
     leave.remarks = req.body.remarks || '';
+    leave.actionBy = user._id;
     await leave.save();
     await sendNotification(leave.student, 'Leave Rejected', `Your leave request from ${leave.fromDate.toDateString()} to ${leave.toDate.toDateString()} was rejected.`);
 
