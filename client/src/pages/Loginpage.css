@@ -1,0 +1,123 @@
+/* LoginPage.css */
+
+/* Global container and layout */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f7f9; /* Light background */
+  padding: 20px;
+}
+
+/* The central card */
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  width: 100%;
+  max-width: 400px; /* Constrain width */
+  text-align: center;
+}
+
+.login-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* Input Styling */
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.login-input:focus {
+  border-color: #007bff; /* Primary color on focus */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Button Styling */
+.login-button {
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, opacity 0.3s;
+  margin-top: 10px;
+}
+
+.login-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.login-button:disabled {
+  background-color: #a0c3e7;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Feedback/Auxiliary Text */
+.error-message {
+  color: #dc3545; /* Red for error */
+  margin: 15px 0;
+  font-size: 14px;
+}
+
+.forgot-password {
+  display: inline-block;
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-text {
+  margin-top: 25px;
+  font-size: 14px;
+  color: #777;
+}
+
+
+
+.login-title {
+  font-size: 20px;
+  color: #004080;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+/* Role Dropdown Styling */
+select.login-input {
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23007bff' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5.516 7.548a.625.625 0 0 1 .884-.884L10 10.263l3.6-3.6a.625.625 0 1 1 .884.884l-4.042 4.042a.625.625 0 0 1-.884 0L5.516 7.548z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 35px;
+  cursor: pointer;
+}
