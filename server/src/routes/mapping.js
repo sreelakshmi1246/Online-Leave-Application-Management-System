@@ -55,4 +55,25 @@ router.delete('/:id', auth, roleCheck('admin'), async (req, res) => {
   res.json({ message: 'Mapping deleted' });
 });
 
+/**
+ * Get mapping for current logged-in student
+ * GET /api/mapping/my
+ */
+router.get('/my', auth, async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) return res.status(401).json({ message: 'Not authenticated' });
+
+    // find mapping where student is current user
+    const mapping = await Mapping.findOne({ student: user.id }).populate('faculty', 'name email department designation employeeId');
+    if (!mapping) return res.json({ message: 'No mapping', mapping: null });
+
+    return res.json({ mapping, faculty: mapping.faculty });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 export default router;

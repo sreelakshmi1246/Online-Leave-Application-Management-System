@@ -76,7 +76,9 @@ export const applyLeave = async (req, res) => {
 export const getMyLeaves = async (req, res) => {
   try {
     const user = req.user;
-    const leaves = await LeaveRequest.find({ student: user._id }).sort({ createdAt: -1 });
+    const leaves = await LeaveRequest.find({ student: user._id })
+    .populate('faculty', 'name email department designation employeeId')
+    .sort({ createdAt: -1 });
     return res.json(leaves);
   } catch (err) {
     console.error(err);
